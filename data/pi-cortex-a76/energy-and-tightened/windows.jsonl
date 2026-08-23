@@ -1,0 +1,8 @@
+{"tag":"G1_idle_sc0","spincount":0,"bench_start":12035.786951254,"bench_end":12062.053500859,"rc":0}
+{"tag":"G1_idle_sc10000","spincount":10000,"bench_start":12090.12795102,"bench_end":12115.475934348,"rc":0}
+{"tag":"G1_idle_sc100000","spincount":100000,"bench_start":12142.762665789,"bench_end":12167.342126265,"rc":0}
+{"tag":"G1_idle_sc1000000","spincount":1000000,"bench_start":12194.678392715,"bench_end":12219.184550079,"rc":0}
+{"tag":"G2_hog2_sc0","spincount":0,"bench_start":12237.040059549,"bench_end":12252.294177675,"rc":0}
+{"tag":"G2_hog2_sc10000","spincount":10000,"bench_start":12270.981011354,"bench_end":12286.54347792,"rc":0}
+{"tag":"G2_hog2_sc100000","spincount":100000,"bench_start":12312.741063493,"bench_end":12335.588117774,"rc":0}
+{"tag":"G2_hog2_sc1000000","spincount":1000000,"bench_start":12433.040080244,"bench_end":12526.334157401,"rc":0}

@@ -1,0 +1,27 @@
+{
+  "title": "The Barrier Spin Crossover: Throughput and Energy Cost of Spin-Wait Thresholds in CPU LLM Inference",
+  "description": "Measurements of how the thread-barrier spin-wait threshold affects CPU LLM inference throughput and energy, on a Raspberry Pi 5 (four homogeneous Cortex-A76 cores, board-level PMIC energy) and on an Intel i7-12700H (heterogeneous Golden Cove plus Gracemont cores). The spin threshold is swept across seven decades. Prefill is insensitive to it while decode is not, and the optimum inverts between an idle machine and a contended one, so no single compile-time constant serves both. The loss is asymmetric: spinning too little costs at most a few percent, spinning too much costs an order of magnitude. Under contention a long spin draws less power and still spends over ten times the energy per token, because the run takes far longer. Includes every raw llama-bench record, the PMIC power traces, the campaign runners, and a script that regenerates every published table from the raw files.",
+  "creators": [
+    {
+      "name": "Jacob, Manu Nicholas",
+      "orcid": "0009-0007-6589-6572"
+    }
+  ],
+  "upload_type": "software",
+  "access_right": "open",
+  "license": "mit",
+  "keywords": [
+    "LLM inference",
+    "llama.cpp",
+    "ggml",
+    "thread barrier",
+    "spin-wait",
+    "OpenMP",
+    "energy efficiency",
+    "Raspberry Pi",
+    "Cortex-A76",
+    "Alder Lake",
+    "heterogeneous CPU",
+    "edge computing"
+  ]
+}
