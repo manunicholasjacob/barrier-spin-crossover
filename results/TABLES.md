@@ -290,3 +290,121 @@ tg64: P2 44.94 + E2 15.33 = 60.26 if perfectly additive; measured P2E2 = 43.59, 
 
 tg64: P4 77.84 + E4 21.84 = 99.69 if perfectly additive; measured P4E4 = 66.82, which is 0.67x of that and 0.86x of P4 alone.
     per-core rate ratio 3.56x. Equal-share static partitioning predicts 43.69; measured 66.82, so the model accounts for 0.65 of it.
+
+---
+
+# Core-count ratio: does the equal-share model predict a sign change?
+
+Fast cores held at two Golden Cove; slow cores varied from two to eight
+Gracemont. The model predicts `mixed / fast-only = ((nP + nE) / nP) * (vE / vP)`,
+which RISES with the number of slow cores and crosses 1.0. `vP` comes from the
+fast-only set and `vE` from the slow-only set at the SAME core count, so both
+carry the same bandwidth contention.
+
+## pp128, KMP_BLOCKTIME=200
+
+| mixed set | fast-only | slow-only | mixed measured | per-core ratio | predicted | model / measured | |
+|---|---:|---:|---:|---:|---:|---:|---|
+| P2E2 | 112.80 +- 2.36 | 32.48 +- 2.04 | 73.33 +- 2.35 | 3.47x | 64.97 | 0.89 |  |
+| P2E4 | 112.80 +- 2.36 | 54.97 +- 7.32 | 100.02 +- 10.02 | 4.10x | 82.46 | 0.82 |  |
+| P2E6 | 112.80 +- 2.36 | 84.89 +- 7.33 | 123.47 +- 13.69 | 3.99x | 113.18 | 0.92 |  |
+| P2E8 | 112.80 +- 2.36 | 78.96 +- 19.30 | 66.04 +- 13.48 | 5.71x | 98.70 | 1.49 | noisy |
+| P4E4 | 218.49 +- 7.97 | 54.97 +- 7.32 | 136.22 +- 4.80 | 3.97x | 109.95 | 0.81 |  |
+
+The sign-change test, two fast cores throughout:
+
+| slow cores | measured mixed/fast | predicted | crosses 1.0 | |
+|---:|---:|---:|---|---|
+| 2 | 0.650x | 0.576x | no |  |
+| 4 | 0.887x | 0.731x | no |  |
+| 6 | 1.095x | 1.003x | yes |  |
+| 8 | 0.585x | 0.875x | no | noisy, not a verdict |
+
+Across the cells that are not flagged noisy, the measured ratio rises monotonically with the number of slow cores, as the model requires: 2E 0.650x, 4E 0.887x, 6E 1.095x.
+
+## pp128, KMP_BLOCKTIME=infinite
+
+| mixed set | fast-only | slow-only | mixed measured | per-core ratio | predicted | model / measured | |
+|---|---:|---:|---:|---:|---:|---:|---|
+| P2E2 | 111.54 +- 2.09 | 32.73 +- 1.07 | 70.76 +- 3.91 | 3.41x | 65.46 | 0.93 |  |
+| P2E4 | 111.54 +- 2.09 | 63.22 +- 2.96 | 99.26 +- 7.03 | 3.53x | 94.83 | 0.96 |  |
+| P2E6 | 111.54 +- 2.09 | 89.81 +- 8.03 | 110.61 +- 17.66 | 3.73x | 119.74 | 1.08 | noisy |
+| P2E8 | 111.54 +- 2.09 | 61.87 +- 26.29 | 88.04 +- 31.28 | 7.21x | 77.33 | 0.88 | noisy |
+| P4E4 | 216.07 +- 10.19 | 63.22 +- 2.96 | 137.50 +- 19.56 | 3.42x | 126.45 | 0.92 |  |
+
+The sign-change test, two fast cores throughout:
+
+| slow cores | measured mixed/fast | predicted | crosses 1.0 | |
+|---:|---:|---:|---|---|
+| 2 | 0.634x | 0.587x | no |  |
+| 4 | 0.890x | 0.850x | no |  |
+| 6 | 0.992x | 1.073x | no | noisy, not a verdict |
+| 8 | 0.789x | 0.693x | no | noisy, not a verdict |
+
+Across the cells that are not flagged noisy, the measured ratio rises monotonically with the number of slow cores, as the model requires: 2E 0.634x, 4E 0.890x.
+
+## tg64, KMP_BLOCKTIME=200
+
+| mixed set | fast-only | slow-only | mixed measured | per-core ratio | predicted | model / measured | |
+|---|---:|---:|---:|---:|---:|---:|---|
+| P2E2 | 42.79 +- 2.86 | 15.00 +- 0.52 | 44.36 +- 1.41 | 2.85x | 30.00 | 0.68 |  |
+| P2E4 | 42.79 +- 2.86 | 24.67 +- 1.39 | 34.94 +- 13.80 | 3.47x | 37.01 | 1.06 | noisy |
+| P2E6 | 42.79 +- 2.86 | 27.87 +- 6.29 | 43.55 +- 12.53 | 4.61x | 37.15 | 0.85 | noisy |
+| P2E8 | 42.79 +- 2.86 | 18.12 +- 12.83 | 23.34 +- 19.37 | 9.45x | 22.65 | 0.97 | noisy |
+| P4E4 | 74.58 +- 5.39 | 24.67 +- 1.39 | 62.12 +- 8.52 | 3.02x | 49.34 | 0.79 |  |
+
+The sign-change test, two fast cores throughout:
+
+| slow cores | measured mixed/fast | predicted | crosses 1.0 | |
+|---:|---:|---:|---|---|
+| 2 | 1.037x | 0.701x | yes |  |
+| 4 | 0.816x | 0.865x | no | noisy, not a verdict |
+| 6 | 1.018x | 0.868x | yes | noisy, not a verdict |
+| 8 | 0.545x | 0.529x | no | noisy, not a verdict |
+
+## tg64, KMP_BLOCKTIME=infinite
+
+| mixed set | fast-only | slow-only | mixed measured | per-core ratio | predicted | model / measured | |
+|---|---:|---:|---:|---:|---:|---:|---|
+| P2E2 | 42.15 +- 0.97 | 15.93 +- 0.45 | 41.76 +- 2.81 | 2.65x | 31.86 | 0.76 |  |
+| P2E4 | 42.15 +- 0.97 | 22.63 +- 2.77 | 47.79 +- 6.74 | 3.73x | 33.94 | 0.71 |  |
+| P2E6 | 42.15 +- 0.97 | 29.14 +- 5.28 | 44.02 +- 13.06 | 4.34x | 38.85 | 0.88 | noisy |
+| P2E8 | 42.15 +- 0.97 | 26.54 +- 12.08 | 25.93 +- 25.60 | 6.35x | 33.17 | 1.28 | noisy |
+| P4E4 | 74.79 +- 3.18 | 22.63 +- 2.77 | 74.09 +- 11.05 | 3.31x | 45.25 | 0.61 |  |
+
+The sign-change test, two fast cores throughout:
+
+| slow cores | measured mixed/fast | predicted | crosses 1.0 | |
+|---:|---:|---:|---|---|
+| 2 | 0.991x | 0.756x | no |  |
+| 4 | 1.134x | 0.805x | yes |  |
+| 6 | 1.045x | 0.922x | yes | noisy, not a verdict |
+| 8 | 0.615x | 0.787x | no | noisy, not a verdict |
+
+Across the cells that are not flagged noisy, the measured ratio rises monotonically with the number of slow cores, as the model requires: 2E 0.991x, 4E 1.134x.
+
+## The same mix on a larger model, where the model stops holding
+
+Everything above is qwen0.5b. Repeating the 2P+4E comparison on qwen1.5b,
+whose working set is larger and whose work is correspondingly more
+bandwidth-bound, inverts the result.
+
+**pp128, qwen1.5b, KMP_BLOCKTIME=200**
+
+| set | tok/s |
+|---|---:|
+| 2 Golden Cove | 55.23 +- 2.90 |
+| 4 Gracemont | 28.73 +- 0.53 |
+| 2 Golden Cove + 4 Gracemont | 72.05 +- 3.92 |
+
+Measured mixed/fast-only 1.305x against a predicted 0.780x, so the model accounts for 0.60 of it. The mixed set beats the fast pair by 16.82 tok/s against a combined spread of 6.82, so that gap is real.
+
+**tg32, qwen1.5b, KMP_BLOCKTIME=200**
+
+| set | tok/s |
+|---|---:|
+| 2 Golden Cove | 21.83 +- 0.25 |
+| 4 Gracemont | 13.48 +- 0.65 |
+| 2 Golden Cove + 4 Gracemont | 26.69 +- 1.25 |
+
+Measured mixed/fast-only 1.222x against a predicted 0.926x, so the model accounts for 0.76 of it. The mixed set beats the fast pair by 4.86 tok/s against a combined spread of 1.51, so that gap is real.

@@ -17,6 +17,16 @@
 #   MIX8  CPU 0,2,4,6 + 12-15  0xF055
 set -u
 
+# Single-instance guard. Two copies of a campaign started at once during round
+# two and one deleted a model out from under the other one's benchmark. On the
+# Pi an overlapping campaign once contaminated 43 runs and cost a full rerun.
+LOCK=/c/llmpc/.pe_sweep.lock
+if ! mkdir "$LOCK" 2>/dev/null; then
+  echo "another run of $(basename "$0") holds $LOCK, refusing to start" >&2
+  exit 1
+fi
+trap 'rmdir "$LOCK" 2>/dev/null' EXIT
+
 BIN=/c/llmpc/bin/llama-bench.exe
 MODEL=/c/llmpc/models/qwen0.5b-q4km.gguf
 OUT=/c/llmpc/pe_raw

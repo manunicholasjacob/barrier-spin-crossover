@@ -3,6 +3,16 @@
 # Throughput only. Power is measured in a separate unperturbed pass (run_power.sh).
 set -u
 
+# Single-instance guard. Two copies of a campaign started at once during round
+# two and one deleted a model out from under the other one's benchmark. On the
+# Pi an overlapping campaign once contaminated 43 runs and cost a full rerun.
+LOCK=$HOME/llm/barrier2/.sweep.lock
+if ! mkdir "$LOCK" 2>/dev/null; then
+  echo "another run of $(basename "$0") holds $LOCK, refusing to start" >&2
+  exit 1
+fi
+trap 'rmdir "$LOCK" 2>/dev/null' EXIT
+
 LLM=$HOME/llm
 MODEL=$LLM/models/qwen0.5b-q4km.gguf
 OMP_BIN=$LLM/llama.cpp/build/bin/llama-bench

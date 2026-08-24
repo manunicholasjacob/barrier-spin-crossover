@@ -1,6 +1,16 @@
 #!/usr/bin/env bash
 # Where does libgomp's DEFAULT spin behaviour sit on the curve, under contention?
 set -u
+
+# Single-instance guard. Two copies of a campaign started at once during round
+# two and one deleted a model out from under the other one's benchmark. On the
+# Pi an overlapping campaign once contaminated 43 runs and cost a full rerun.
+LOCK=$HOME/llm/barrier2/.default.lock
+if ! mkdir "$LOCK" 2>/dev/null; then
+  echo "another run of $(basename "$0") holds $LOCK, refusing to start" >&2
+  exit 1
+fi
+trap 'rmdir "$LOCK" 2>/dev/null' EXIT
 LLM=$HOME/llm; MODEL=$LLM/models/qwen0.5b-q4km.gguf
 BIN=$LLM/llama.cpp/build/bin/llama-bench
 OUT=$LLM/barrier2/raw4; mkdir -p "$OUT"; export LC_ALL=C

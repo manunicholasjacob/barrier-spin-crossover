@@ -232,11 +232,19 @@ for prefix, ngen, label in (
 # Tables 6+: heterogeneous cores, if that data is present
 # --------------------------------------------------------------------------
 LAPTOP_RAW = os.path.join(LAPTOP, "spin-sweep")
+RATIO_RAW = os.path.join(LAPTOP, "ratio-sweep")
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
 if os.path.isdir(LAPTOP_RAW) and glob.glob(os.path.join(LAPTOP_RAW, "L1_*.json")):
-    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
     from laptop_tables import emit_laptop_tables  # noqa: E402
 
     emit_laptop_tables(LAPTOP_RAW, bench_samples, mean_sd)
 else:
     print()
     print("_Heterogeneous-core tables are emitted when data/laptop-alderlake/spin-sweep is present._")
+
+if os.path.isdir(RATIO_RAW) and glob.glob(os.path.join(RATIO_RAW, "M1_*.json")):
+    from ratio_tables import emit_model_size_table, emit_ratio_tables  # noqa: E402
+
+    emit_ratio_tables(RATIO_RAW, bench_samples)
+    emit_model_size_table(RATIO_RAW, bench_samples)

@@ -55,22 +55,30 @@ on four Golden Cove cores, 6.8x on six, and 14x on the eight-thread mixed set.
 Above zero, this machine cannot separate the settings from each other; the
 analysis says so per row rather than inviting you to read a trend into noise.
 
-**Adding slow cores to a fast set makes prefill slower, not faster.** Two Golden
-Cove cores run prefill at 115.04 tok/s. Add two Gracemont cores and it drops to
-73.25, which is 0.64x of the Golden Cove pair on its own. At four plus four it
-is 0.62x. The cores are not idle and they are not broken; they are being handed
-an equal share of work they need three and a half times as long to finish, and
-the barrier waits for them.
+**Whether adding slow cores to a fast set helps or hurts depends on the model.**
+Holding two Golden Cove cores fixed on qwen0.5b and adding Gracemont cores,
+prefill goes 0.650x at two slow cores, 0.887x at four, and 1.095x at six,
+relative to the fast pair alone. So a small mix costs 35 percent and a larger
+one turns into a 10 percent gain. The curve rises with the number of slow cores
+and crosses one around six.
 
-**That penalty is a partitioning problem, not a wait-policy problem.** Assume
+**Equal-share partitioning predicts that curve, including the crossing.** Assume
 work is split evenly by thread index and the barrier waits for the slowest
-thread, and you predict the measured mixed-set prefill throughput to within 5 to
-10 percent. Decode does better than the model, by 22 to 35 percent, which is
-consistent with it being partly bandwidth-bound and with the chunk-level work
-stealing that already exists for matrix multiplication. Changing the barrier
-wait policy from the default to never-sleep moves none of this: both give the
-same picture. No spin threshold recovers throughput that was lost when the work
-was divided.
+thread, and the mixed set should land at `((nP + nE) / nP) * (vE / vP)` of the
+fast-only set. That predicts 0.576, 0.731 and 1.003 against the three measured
+numbers, and puts the sign change at six slow cores, where it happened.
+
+**And it stops holding on a larger model.** The same 2P+4E comparison on
+qwen1.5b gives 1.305x rather than the 0.780x the model predicts, so the model
+accounts for 0.60 of it. Same machine, same core mix. On the small model adding
+four slow cores costs 11 percent; on the larger one it gains 31 percent, and
+that gap is 16.82 tok/s against a combined spread of 6.82. The likely reason is
+that the larger working set pushes the work toward bandwidth, where core speed
+matters less, but that is inference from the numbers rather than something
+measured here.
+
+**None of it moves with the wait policy.** Switching between the default block
+time and never-sleep changes none of these comparisons.
 
 ## What was measured
 
@@ -181,6 +189,7 @@ data/pi-cortex-a76/
   default-comparison/     unset versus explicit spin count, both regimes
 data/laptop-alderlake/
   spin-sweep/             KMP_BLOCKTIME across P-only, E-only and mixed affinity
+  ratio-sweep/            core-count ratios from 2P+2E to 2P+8E, and a second model size
 scripts/
   make_tables.py          regenerates every table from the raw files
   pmic_sampler.py         10 Hz per-rail PMIC sampler
@@ -189,6 +198,8 @@ scripts/
   run_energy.sh           Pi: energy plus tightened contention sweep
   run_default.sh          Pi: unset versus explicit
   pe_sweep.sh             x86: heterogeneous-core sweep
+  hybrid2.sh              x86: core-count ratio sweep and the second model size
+  ratio_tables.py         emits the ratio and model-size tables
 results/
   TABLES.md               generated output, checked in so the repo reads without running anything
 ```
