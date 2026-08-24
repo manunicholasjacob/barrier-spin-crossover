@@ -47,13 +47,15 @@ that default is optimal. Under contention it gives up 79 percent of throughput.
 
 ## What the hybrid x86 part adds
 
-Three more things, from the Golden Cove plus Gracemont machine.
+Four more things, from the Golden Cove plus Gracemont machine.
 
 **Going to sleep immediately is the worst setting on every core type, and it
 gets worse the wider the thread team.** Decode at `KMP_BLOCKTIME=0` costs 3.4x
 on four Golden Cove cores, 6.8x on six, and 14x on the eight-thread mixed set.
-Above zero, this machine cannot separate the settings from each other; the
-analysis says so per row rather than inviting you to read a trend into noise.
+Above zero the differences are a few percent and only about half of them clear
+their own run-to-run scatter, including on a repeat run at 5 percent background
+load. The analysis reports that per row rather than inviting you to read a trend
+into noise.
 
 **Whether adding slow cores to a fast set helps or hurts depends on the model.**
 Holding two Golden Cove cores fixed on qwen0.5b and adding Gracemont cores,
@@ -91,7 +93,7 @@ time and never-sleep changes none of these comparisons.
 | OpenMP runtime | GNU libgomp | LLVM libomp |
 | Spin knob | `GOMP_SPINCOUNT` (iterations) | `KMP_BLOCKTIME` (milliseconds) |
 | Energy | board PMIC, per-rail V*I at 10 Hz | not instrumented |
-| Model | qwen0.5b Q4_K_M, CPU only | qwen0.5b Q4_K_M, CPU only |
+| Model | qwen0.5b Q4_K_M, CPU only | qwen0.5b and qwen1.5b Q4_K_M, CPU only |
 
 The two spin knobs are not the same unit and they do not gate at quite the same
 point. `GOMP_SPINCOUNT` is a number of spin iterations a libgomp thread burns
