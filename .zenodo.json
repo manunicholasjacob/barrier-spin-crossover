@@ -23,5 +23,6 @@
     "Alder Lake",
     "heterogeneous CPU",
     "edge computing"
-  ]
+  ],
+  "version": "v1.0.0"
 }
