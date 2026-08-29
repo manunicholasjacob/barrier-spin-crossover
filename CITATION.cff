@@ -1,6 +1,7 @@
 cff-version: 1.2.0
 message: "If you use this software or its results, please cite it as below."
 title: "The Barrier Spin Crossover: Throughput and Energy Cost of Spin-Wait Thresholds in CPU LLM Inference"
+doi: "10.5281/zenodo.22163331"
 authors:
   - family-names: "Jacob"
     given-names: "Manu Nicholas"
