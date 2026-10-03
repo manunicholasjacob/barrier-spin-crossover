@@ -1,5 +1,7 @@
 # The Barrier Spin Crossover
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22163331.svg)](https://doi.org/10.5281/zenodo.22163331)
+
 Measurements of how the thread-barrier spin-wait threshold affects CPU LLM
 inference throughput and energy.
 
