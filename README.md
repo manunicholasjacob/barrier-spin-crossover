@@ -197,6 +197,7 @@ data/laptop-alderlake/
   ratio-sweep/            core-count ratios from 2P+2E to 2P+8E, and a second model size
 scripts/
   make_tables.py          regenerates every table from the raw files
+  laptop_tables.py        the heterogeneous-core tables, called by make_tables.py
   pmic_sampler.py         10 Hz per-rail PMIC sampler
   run_sweep.sh            Pi: idle spin sweep
   run_contention.sh       Pi: contention and oversubscription
