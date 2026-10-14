@@ -1,0 +1,23 @@
+name: reproduce
+
+# results/TABLES.md must be exactly what scripts/make_tables.py prints from the raw files in data/.
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tables:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Regenerate the tables (standard library only)
+        run: python scripts/make_tables.py > results/TABLES.md
+      - name: Regenerated tables match the committed ones
+        run: git diff --exit-code -- results/TABLES.md
